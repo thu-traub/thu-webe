@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <title>Demo Styleguide</title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+    <div class="col-12">
+        <h1>Minimal Example Style Guide</h1>
+        <p>This is a very brief example styleguide. We focus on these elements:
+            <ul>
+                <li>Color</li>
+                <li>Type</li>
+                <li>Images</li>
+                <li>Layout</li>
+                <li>Elements</li>
+            </ul>
+        </p>
+    </div>
+    </div>
+    <div class="row stylesection">
+        <h2>Colors</h2>
+        <div class="col-12">
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <th>Color</th>
+                    <th>Code</th>
+                    <th>CSS-Name</th>
+                    <th>Usage</th>
+                </tr>
+                <tr>
+                    <th>Main Color</th>
+                    <th><div height="100px" width="200px" style="background-color: var(--main-color);">&nbsp;</div></th>
+                    <th>#0055A3</th>
+                    <th><pre>--main-color</pre></th>
+                    <th>Used for headlines and logo.</th>
+                </tr>
+                <tr>
+                    <th>Light Color</th>
+                    <th><div height="100px" width="200px" style="background-color: var(--light-color);">&nbsp;</div></th>
+                    <th>#1887F0</th>
+                    <th><pre>--light-color</pre></th>
+                    <th>Used for highlighted menu items.</th>
+                </tr>
+                <tr>
+                    <th>Dark Color</th>
+                    <th><div height="100px" width="200px" style="background-color: var(--dark-color);">&nbsp;</div></th>
+                    <th>#002D57</th>
+                    <th><pre>--dark-color</pre></th>
+                    <th>Used for spacing between items.</th>
+                </tr>
+                <tr>
+                    <th>Complementary Color</th>
+                    <th><div height="100px" width="200px" style="background-color: var(--compl-color);">&nbsp;</div></th>
+                    <th>#002D57</th>
+                    <th><pre>--compl-color</pre></th>
+                    <th>Used for spacing between items.</th>
+                </tr>
+                <tr>
+                    <th>Alert Color</th>
+                    <th><div height="100px" width="200px" style="background-color: var(--alert-color);">&nbsp;</div></th>
+                    <th>#002D57</th>
+                    <th><pre>--alert-color</pre></th>
+                    <th>Used for alerts on the page. Not from the regular color harmony.</th>
+                </tr>
+                <tr>
+                    <th>White Color</th>
+                    <th><div height="100px" width="200px" style="background-color: var(--white-color); outline: 1px solid gray;">&nbsp;</div></th>
+                    <th>#f8f8f8</th>
+                    <th><pre>--white-color</pre></th>
+                    <th>Used for text on colored background.</th>
+                </tr>
+                <tr>
+                    <th>Gray Color</th>
+                    <th><div height="100px" width="200px" style="background-color: var(--gray-color);">&nbsp;</div></th>
+                    <th>#a0a0a0</th>
+                    <th><pre>--gray-color</pre></th>
+                    <th>Used disabled items.</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row stylesection">
+        <h2>Fonts</h2>
+        <div class="col-12">
+            <table class="table">
+                <tr>
+                    <th>Tag</th>
+                    <th>Font</th>
+                    <th>Size</th>
+                    <th>Usage</th>
+                </tr>
+                <tr>
+                    <th><h1>H1</h1></th>
+                    <th><h1>Calibri, sans-serif</h1></th>
+                    <th><h1>32px</h1></th>
+                    <th>Headline h1</th>
+                </tr>
+                <tr>
+                    <th><h2>H2</h2></th>
+                    <th><h2>Calibri, sans-serif</h2></th>
+                    <th><h2>28px</h2></th>
+                    <th>Headline h2</th>
+                </tr>
+                <tr>
+                    <th><h3>H3</h3></th>
+                    <th><h3>Calibri, sans-serif</h3></th>
+                    <th><h3>22px</h3></th>
+                    <th>Headline h3</th>
+                </tr>
+                <tr>
+                    <th><h4>H1</h4></th>
+                    <th><h4>Calibri, sans-serif</h4></th>
+                    <th><h4>18px</h4></th>
+                    <th>Headline h4</th>
+                </tr>
+                <tr>
+                    <th>BODY</th>
+                    <th>Calibri, sans-serif</th>
+                    <th>14px</th>
+                    <th>Body text</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <h2>Code Listing</h2>
+        <pre>
+#include <stdio.h>
+int main() {
+    printf("Hello World!");
+    return 0;
+}
+</stdio.h>            
+        </pre>
+    </div>
+
+    <div class="row stylesection">
+        <h2>Images</h2>
+        <table class="table">
+            <tr>
+                <th>Images</th>
+                <th>Size</th>
+                <th>Usage</th>
+            </tr>
+            <tr>
+                <td><img alt="Example Thumbnail" src="ex-thumb.jpg"></td>
+                <td>80x80 pixel</td>
+                <td>Thumbnail Images</td>
+            </tr>
+            <tr>
+                <td><img alt="Example Product" src="ex-product.jpg"></td>
+                <td>150x150 pixel</td>
+                <td>product Images</td>
+            </tr>
+            <tr>
+                <td><img style="width: 600px; height:150px; object-fit: none;" alt="Example Slider" src="ex-slider.jpg"></td>
+                <td>800x150 pixel</td>
+                <td>Slider on top of pages</td>
+            </tr>
+        </table>
+    </div>
+    <div class="row stylesection">
+        <h2>Elements</h2>
+        <h3>Accordeon</h3>
+        <div class="col-8">
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Accordion Item #1
+                    </button>
+                  </h2>
+                  <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium perspiciatis distinctio delectus sit animi commodi laborum eius sunt temporibus totam!
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      Accordion Item #2
+                    </button>
+                  </h2>
+                  <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eligendi vel molestias omnis nulla aliquam adipisci quidem unde velit expedita veniam, dolorum voluptatem enim maiores itaque voluptate dolorem voluptatibus quos rerum sunt commodi? Facilis, totam non repellendus mollitia voluptates laborum eaque.
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                      Accordion Item #3
+                    </button>
+                  </h2>
+                  <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Amet laudantium tempora assumenda quo illo aliquid rem aliquam. Iusto consectetur architecto sint velit sequi eum amet sed. Repellat quibusdam rem corporis voluptates distinctio delectus omnis impedit iusto eius culpa, tempore excepturi alias, quisquam iure ut dicta aspernatur hic nobis inventore non sit? Animi dignissimos ipsam laboriosam, quam natus corporis nulla dolorem!
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row stylesection">
+            <h2>Layout and Navigation</h2>
+            <div class="col-8">
+                <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                    <div class="container-fluid">
+                    <a class="navbar-brand" href="#">Navbar</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Dropdown
+                            </a>
+                            <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link disabled">Disabled</a>
+                        </li>
+                        </ul>
+                        <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                        </form>
+                    </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <h3>Content</h3>
+            <div class="col-4">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nostrum dolor neque quos pariatur, fugit quod. Animi aperiam fuga praesentium inventore delectus quae ea nesciunt vero magnam cum ab voluptatem, optio beatae, eligendi molestiae numquam facilis doloribus repellat quis quaerat nam ut doloremque? Ipsam quia numquam rerum accusamus culpa vitae atque quos neque magnam laborum nemo beatae delectus vero, labore vel, modi eos hic aliquid. Voluptas in numquam quam sed, fuga explicabo nobis voluptates eligendi ex atque molestias sapiente aspernatur temporibus similique fugiat labore quas dignissimos officiis error recusandae tempore ad debitis. Minus nemo, repellendus officia beatae necessitatibus aperiam ad autem.</div>
+            <div class="col-4">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nostrum dolor neque quos pariatur, fugit quod. Animi aperiam fuga praesentium inventore delectus quae ea nesciunt vero magnam cum ab voluptatem, optio beatae, eligendi molestiae numquam facilis doloribus repellat quis quaerat nam ut doloremque? Ipsam quia numquam rerum accusamus culpa vitae atque quos neque magnam laborum nemo beatae delectus vero, labore vel, modi eos hic aliquid. Voluptas in numquam quam sed, fuga explicabo nobis voluptates eligendi ex atque molestias sapiente aspernatur temporibus similique fugiat labore quas dignissimos officiis error recusandae tempore ad debitis. Minus nemo, repellendus officia beatae necessitatibus aperiam ad autem.</div>
+        </div>
+        <div class="row">
+            <div class="col-8 LayoutFooter">
+                Legal Notice, Copyright
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>    
+</body>
+</html>

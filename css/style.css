@@ -1,5 +1,9 @@
+:root {
+    --main-color: blue;
+}
+
 h1, h2 {
-    color: blue
+    color: var(--main-color);
 }
 body {
     font-family:Calibri, Arial, Helvetica, sans-serif;
