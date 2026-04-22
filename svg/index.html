@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>SVG</h1>
+    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 401 301">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-2 {
+        fill: url(#linear-gradient);
+      }
+
+      .cls-3 {
+        fill: url(#linear-gradient-2);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1=".5" y1="116.5" x2="400.5" y2="116.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="red"/>
+      <stop offset=".28" stop-color="#ffff26"/>
+      <stop offset=".48" stop-color="lime"/>
+      <stop offset=".71" stop-color="blue"/>
+      <stop offset="1" stop-color="red"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="121.5" y1="167.5" x2="279.5" y2="167.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff200"/>
+      <stop offset="1" stop-color="#fff200" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect class="cls-2" x=".5" y="65.5" width="400" height="102"/>
+  <circle class="cls-3" cx="200.5" cy="167.5" r="79"/>
+  <rect class="cls-1" x=".5" y=".5" width="400" height="300"/>
+</svg>
+</body>
+</html>
