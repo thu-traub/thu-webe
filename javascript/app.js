@@ -1,5 +1,17 @@
-o = new Object();
+class UlmItem {
+    constructor() {
+        this.loc = "Ulm";
+        this.print = function () { console.log(`${this.name} at ${this.loc}`); };
+    }
+}
 
-o.__proto__.name = "John";
-//o.name = "Smith";
-console.log(o.name);
+class Person extends UlmItem {
+    constructor(name, age) {
+        super();
+        this.name = name;
+        this.age = age;
+    }
+}
+
+var p = new Person("Hans", 12);
+p.print();
