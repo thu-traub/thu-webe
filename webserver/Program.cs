@@ -28,11 +28,26 @@ class MiniWebServer
             int n = cl.Receive(buf);
             string request = Encoding.UTF8.GetString(buf, 0, n);
             string[] parts = request.Split(" ");
+            if (parts.Length < 2) {
+                cl.Close();
+                continue;
+            }
             string filename = parts[1].Substring(1);
             if (filename == "") filename = HOME_PAGE;
             filename = Path.Combine(WWW_ROOT, filename);
             Console.WriteLine(filename);
-            string mime = "text/html";
+            string extension = Path.GetExtension(filename).ToLower();
+            System.Console.WriteLine("Request for " + extension);
+
+            string mime = "application/octet-stream";
+            switch (extension) {
+                case ".html": mime = "text/html"; break;
+                case ".css": mime = "text/css"; break;
+                case ".js": mime = "application/javascript"; break;
+                case ".png": mime = "image/png"; break;
+                case ".jpg":
+                case ".jpeg": mime = "image/jpeg"; break;
+            }
 
             if (!File.Exists(filename)) {
                 string headerne = "HTTP/1.0 404 Not Found\r\nContent-Type: text/html\r\n\r\n<h1>File not found</h1>\r\n";
