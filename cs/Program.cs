@@ -1,40 +1,28 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Reflection;
+using System.IO;
+using System.Globalization;
 
 class Program
 {
-    async static Task work()
+    static string? getText(int a)
     {
-        Console.WriteLine("begin work");
-        await Task.Delay(3000);
-        Console.WriteLine("end work");
+        if (a == 0) return null;
+        return "hello";
     }
-
-    async static Task<String> read()
-    {
-        Console.WriteLine("begin work");
-        await Task.Delay(3000);
-        Console.WriteLine("end work");
-        return "text";
-    }
-
-    static async void run1()
-    {
-        await work();
-        await work();
-    }
-
-    static async void run2()
-    {
-        String r = await read();
-        Console.WriteLine(r);
-    }
-    
     static void Main(string[] args)
     {
-        run2();
-        Console.WriteLine("back in main");
-        Thread.Sleep(8000);
+        string? t = getText(0);
+        if (t == null)
+        {
+            Console.WriteLine("t is null");
+            return;
+        }   
+        string m = t;
+        Console.WriteLine(m);
     }
 }
