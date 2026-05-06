@@ -24,6 +24,8 @@ class MiniWebServer
             Socket cl = srv.Accept();
             byte[] buf = new byte[1024];
             int n = cl.Receive(buf);
+            string request = Encoding.UTF8.GetString(buf, 0, n);
+            Console.WriteLine(request);
             string mime = "text/html";
             string filename = "index.html";
             byte[] content = File.ReadAllBytes(filename);
