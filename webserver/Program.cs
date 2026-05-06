@@ -22,7 +22,8 @@ class MiniWebServer
             UseShellExecute = false,
             CreateNoWindow = true
         };
-        Process p = Process.Start(psi);
+        Process? p = Process.Start(psi);
+        if (p == null) return "Error starting process";
         string output = p.StandardOutput.ReadToEnd();
         p.WaitForExit();
         output = output.Replace("<", "&lt;").Replace(">", "&gt;");
@@ -57,15 +58,15 @@ class MiniWebServer
             string extension = Path.GetExtension(filename).ToLower();
             System.Console.WriteLine("Request for " + extension);
 
-            string mime = "application/octet-stream";
-            switch (extension) {
-                case ".html": mime = "text/html"; break;
-                case ".css": mime = "text/css"; break;
-                case ".js": mime = "application/javascript"; break;
-                case ".png": mime = "image/png"; break;
-                case ".jpg":
-                case ".jpeg": mime = "image/jpeg"; break;
-            }
+            string mime = extension switch
+            {
+                ".html" => "text/html",
+                ".css" => "text/css",
+                ".js" => "application/javascript",
+                ".png" => "image/png",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                _ => "application/octet-stream"
+            };
 
             if (!File.Exists(filename)) {
                 string headerne = "HTTP/1.0 404 Not Found\r\nContent-Type: text/html\r\n\r\n<h1>File not found</h1>\r\n";
