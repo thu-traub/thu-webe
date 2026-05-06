@@ -6,6 +6,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography;
+using System.Diagnostics;
 
 class MiniWebServer
 {
@@ -14,7 +15,18 @@ class MiniWebServer
 
     static string dynamicContent()
     {
-        return DateTime.Now.ToString();
+        //return DateTime.Now.ToString();
+        ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", "/c dir")
+        {
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        Process p = Process.Start(psi);
+        string output = p.StandardOutput.ReadToEnd();
+        p.WaitForExit();
+        output = output.Replace("<", "&lt;").Replace(">", "&gt;");
+        return output;
     }
 
     static void Main(string[] args)
