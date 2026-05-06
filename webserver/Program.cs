@@ -24,8 +24,12 @@ class MiniWebServer
             Socket cl = srv.Accept();
             byte[] buf = new byte[1024];
             int n = cl.Receive(buf);
-            string antwort = "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>Hello World</h1>";
-            cl.Send(Encoding.UTF8.GetBytes(antwort));
+            string mime = "text/html";
+            string filename = "index.html";
+            byte[] content = File.ReadAllBytes(filename);
+            string header = $"HTTP/1.0 200 OK\r\nContent-Type: {mime}\r\nContent-Length: {content.Length}\r\n\r\n";
+            cl.Send(Encoding.UTF8.GetBytes(header));
+            cl.Send(content);
             cl.Close();
         }
     }
