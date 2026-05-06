@@ -11,6 +11,12 @@ class MiniWebServer
 {
     const string WWW_ROOT = "wwwroot";
     const string HOME_PAGE = "index.html";
+
+    static string dynamicContent()
+    {
+        return DateTime.Now.ToString();
+    }
+
     static void Main(string[] args)
     {
         IPEndPoint ep = new IPEndPoint(IPAddress.Any, 9000);
@@ -57,6 +63,13 @@ class MiniWebServer
             }
 
             byte[] content = File.ReadAllBytes(filename);
+
+            if (extension == ".html") {
+                string html = Encoding.UTF8.GetString(content);
+                html = html.Replace("$$", dynamicContent());
+                content = Encoding.UTF8.GetBytes(html);
+            }
+
             string header = $"HTTP/1.0 200 OK\r\nContent-Type: {mime}\r\nContent-Length: {content.Length}\r\n\r\n";
             cl.Send(Encoding.UTF8.GetBytes(header));
             cl.Send(content);
