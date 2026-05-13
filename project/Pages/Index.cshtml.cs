@@ -5,18 +5,21 @@ namespace project.Pages;
 
 public class IndexModel : PageModel
 {
-    public List<Person> plist { get; set; }
-    public IndexModel()
+    private readonly ILogger<IndexModel> logger;
+    private readonly IPersonConnector personConnector;
+    public List<Person> plist { get; set;}
+
+    public IndexModel(ILogger<IndexModel> logger, IPersonConnector personConnector)
     {
-        plist = new List<Person>
-        {
-            new Person { Id = 1, FirstName = "John", LastName = "Doe", Age = 30 },
-            new Person { Id = 2, FirstName = "Jane", LastName = "Smith", Age = 25 },
-            new Person { Id = 3, FirstName = "Bob", LastName = "Johnson", Age = 40 }
-        };
+        this.logger = logger;
+        this.personConnector = personConnector;
+        plist = new();
     }
     public void OnGet()
     {
-     
+        List<Person>? list = personConnector.Get();
+        if (list != null) {
+            plist = list;
+        }
     }
 }
