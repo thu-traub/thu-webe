@@ -6,8 +6,25 @@
 
 <div class="text-left">
     <h1 class="display-4">Person List</h1>
-    <p>Id: @Model.plist[0].Id</p>
-    <p>First Name: @Model.plist[0].FirstName</p>
-    <p>Last Name: @Model.plist[0].LastName</p>
-    <p>Age: @Model.plist[0].Age</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in Model.plist)
+            {
+                <tr>
+                    <td>@person.Id</td>
+                    <td>@person.FirstName</td>
+                    <td>@person.LastName</td>
+                    <td>@person.Age</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
