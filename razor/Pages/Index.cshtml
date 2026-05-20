@@ -3,5 +3,19 @@
 
 <div class="text-center">
     <h1 class="display-4">Demo Test</h1>
-    <p>Zeit = @Model.Message</p>
+    @* <p>Name = @Model.test?.name</p>
+    <p>Alter = @Model.test?.alter</p> *@
+    <p>Message = @Model.Message</p>
 </div>
+
+<form method="post">
+    <input type="hidden" name="cnt" value="@Model.cnt" />    
+    <button type="submit">Click</button>
+</form>
+
+@* <form method="post" asp-page-handler="Edit">
+    <input type="text" name="name" placeholder="Name" />
+    <input type="text" name="alter" placeholder="Alter" />
+    <button name="button" id="button1" value="button1" type="submit">Submit</button>
+    <button name="button" id="button2" value="button2" type="submit">Submit 2</button>
+</form> *@
