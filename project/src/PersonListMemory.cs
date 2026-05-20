@@ -29,6 +29,16 @@ public class PersonListMemory : IPersonConnector
 
     public bool Update(Person person)
     {
-        throw new NotImplementedException();
+        Person? old = plist.FirstOrDefault(p => p.Id == person.Id);
+        if (old != null)
+        {
+            old.FirstName = person.FirstName;
+            old.LastName = person.LastName;
+            old.Age = person.Age;
+            return true;
+        } else
+        {
+            return false;
+        }
     }
 }
