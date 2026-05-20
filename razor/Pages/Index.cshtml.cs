@@ -6,11 +6,9 @@ namespace razor.Pages;
 public class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> logger;
-    public string Message { get; set; }
-    [BindProperty] public int cnt { get; set; }
+    public string Message { get; set; } = "";
+    public int? cnt { get; set; }
 
-    // [BindProperty]
-    // public Test test { get; set; }
     private readonly ITime timeService;
 
     public IndexModel(ILogger<IndexModel> logger, ITime timeService)
@@ -20,29 +18,16 @@ public class IndexModel : PageModel
     }
     public void OnGet(string id)
     {
-        Message = cnt.ToString();
+        Message = "---";
     }
 
     public void OnPost()
     {
+        cnt = HttpContext.Session.GetInt32("cnt");
+        if (cnt == null) cnt = 0;
         Message = "#click = " + (++cnt);
-        // string? c = HttpContext.Request.Cookies["cnt"];
-        // if (c != null) cnt = Int32.Parse(c);
-        // Message = "#click = " + (++cnt);
-        // HttpContext.Response.Cookies.Append("cnt", cnt.ToString());
+        HttpContext.Session.SetInt32("cnt", cnt.Value);
     }
-    // public void OnPost(string button)
-    // {
-    //     logger.LogInformation($"Button {button} clicked at {DateTime.Now}");
-    // }
-    // public void OnPostEdit(string button)
-    // {
-    //     logger.LogInformation($"Edit: Button {button} clicked at {DateTime.Now}");
-    // }
+
 }
 
-// public class Test
-// {
-//     public string name { get; set; } = "";
-//     public string alter { get; set; } = "";
-// }
