@@ -2,7 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<IPersonConnector, PersonListMemory>();
+builder.Services.AddSingleton<IPersonConnector, PersonListJson>();
 
 var app = builder.Build();
 
