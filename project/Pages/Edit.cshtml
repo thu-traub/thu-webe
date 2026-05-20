@@ -2,3 +2,24 @@
 @model EditModel
 
 <h1>Edit Page</h1>
+<h2>ID: @Model.p.Id</h2>
+
+<form method="post">
+    <div class="mb-3">
+        <label for="Id" class="form-label">ID</label>
+        <input type="text" class="form-control" id="Id" name="Id" value="@Model.p.Id" disabled>
+    </div>
+    <div class="mb-3">
+        <label for="firstName" class="form-label">First Name</label>
+        <input type="text" class="form-control" id="firstName" name="FirstName" value="@Model.p.FirstName">
+    </div>
+    <div class="mb-3">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input type="text" class="form-control" id="lastName" name="LastName" value="@Model.p.LastName">
+    </div>
+    <div class="mb-3">
+        <label for="age" class="form-label">Age</label>
+        <input type="number" class="form-control" id="age" name="Age" value="@Model.p.Age">
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

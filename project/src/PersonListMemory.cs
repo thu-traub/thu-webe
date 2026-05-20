@@ -24,7 +24,7 @@ public class PersonListMemory : IPersonConnector
 
     public Person? Get(int id)
     {
-        throw new NotImplementedException();
+        return plist.FirstOrDefault(p => p.Id == id);
     }
 
     public bool Update(Person person)
