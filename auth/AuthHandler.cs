@@ -13,25 +13,24 @@ public class AuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
         this.logger = logger;
     }
 
+    protected AuthenticateResult Fail()
+    {
+        Response.Headers["WWW-Authenticate"] = "Basic realm=\"MyRealm\"";
+        return AuthenticateResult.Fail("Unauthorized");
+    }
+
     protected async override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         string? authheader = Request.Headers["Authorization"];
-        if (string.IsNullOrEmpty(authheader))
-        {
-            Response.Headers["WWW-Authenticate"] = "Basic realm=\"MyRealm\"";
-            return AuthenticateResult.Fail("Unauthorized");
-        }
+        if (string.IsNullOrEmpty(authheader)) return Fail();
+
         string encodedCredentials = authheader.Substring("Basic ".Length).Trim();
         byte[] credentialBytes = Convert.FromBase64String(encodedCredentials);
         string[] credentials = System.Text.Encoding.UTF8.GetString(credentialBytes).Split(':', 2);
         string username = credentials[0];
         string password = credentials[1];
         string[] udb = File.ReadAllLines("users.txt")[0].Split(';', 2);
-        if (password != udb[1] || username != udb[0])
-        {
-            Response.Headers["WWW-Authenticate"] = "Basic realm=\"MyRealm\"";
-            return AuthenticateResult.Fail("Unauthorized");
-        }
+        if (password != udb[1] || username != udb[0]) return Fail();
 
         var claims = new[]
         {
