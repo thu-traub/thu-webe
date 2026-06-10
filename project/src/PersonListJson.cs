@@ -35,7 +35,15 @@ public class PersonListJson : IPersonConnector
 
     public bool Delete(int id)
     {
-        throw new NotImplementedException();
+        Person? old = plist.FirstOrDefault(p => p.Id == id);
+        if (old != null)        {
+            plist.Remove(old);
+            Save();
+            return true;
+        } else
+        {
+            return false;
+        }
     }
 
     public List<Person>? Get()
