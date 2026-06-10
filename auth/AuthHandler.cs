@@ -26,7 +26,8 @@ public class AuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
         string[] credentials = System.Text.Encoding.UTF8.GetString(credentialBytes).Split(':', 2);
         string username = credentials[0];
         string password = credentials[1];
-        if (password != "demo123" || username != "admin")
+        string[] udb = File.ReadAllLines("users.txt")[0].Split(';', 2);
+        if (password != udb[1] || username != udb[0])
         {
             Response.Headers["WWW-Authenticate"] = "Basic realm=\"MyRealm\"";
             return AuthenticateResult.Fail("Unauthorized");
