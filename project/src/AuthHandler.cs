@@ -21,6 +21,8 @@ public class AuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 
     protected async override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        // Check if my Auth Cookie is present -> user logged in
+
         string? authheader = Request.Headers["Authorization"];
         if (string.IsNullOrEmpty(authheader)) return Fail();
 
@@ -31,6 +33,8 @@ public class AuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
         string password = credentials[1];
         string[] udb = File.ReadAllLines("users.txt")[0].Split(';', 2);
         if (password != udb[1] || username != udb[0]) return Fail();
+
+        // Set the response cookie to log the user in
 
         var claims = new[]
         {
