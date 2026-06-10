@@ -9,7 +9,10 @@ public class PersonListMemory : IPersonConnector
     }
     public Person Create(Person person)
     {
-        throw new NotImplementedException();
+        int maxid = plist.Count > 0 ? plist.Max(p => p.Id) : 0;
+        person.Id = maxid + 1;
+        plist.Add(person);
+        return person;
     }
 
     public bool Delete(int id)
