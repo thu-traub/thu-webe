@@ -23,8 +23,15 @@ public class EditModel : PageModel
 
     public IActionResult OnPost()
     {
-        bool ok = personConnector.Update(p);
-        logger.LogInformation($"Updated person with id {p.Id}: {ok}");
+        if (p.Id == 0)
+        {
+            Person np = personConnector.Create(p);
+            logger.LogInformation($"Created new person with id {np.Id}");
+        } else
+        {
+            bool ok = personConnector.Update(p);
+            logger.LogInformation($"Updated person with id {p.Id}: {ok}");
+        }
         return RedirectToPage("Index");
     }
 }
