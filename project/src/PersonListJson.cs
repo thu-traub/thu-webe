@@ -4,8 +4,10 @@ public class PersonListJson : IPersonConnector
 {
     const string FILEPATH = "data/personlist.json"; 
     List<Person> plist = new List<Person>();
-    public PersonListJson()
+    ILogger<PersonListJson> logger;
+    public PersonListJson(ILogger<PersonListJson> logger)
     {
+        this.logger = logger;
         if (File.Exists(FILEPATH))
         {
             string json = File.ReadAllText(FILEPATH);
@@ -26,23 +28,29 @@ public class PersonListJson : IPersonConnector
     }
     public Person Create(Person person)
     {
-        int maxid = plist.Count > 0 ? plist.Max(p => p.Id) : 0;
-        person.Id = maxid + 1;
-        plist.Add(person);
-        Save();
-        return person;
+        lock(plist)
+        {
+            int maxid = plist.Count > 0 ? plist.Max(p => p.Id) : 0;
+            person.Id = maxid + 1;
+            plist.Add(person);
+            Save();
+            return person;
+        }
     }
 
     public bool Delete(int id)
     {
-        Person? old = plist.FirstOrDefault(p => p.Id == id);
-        if (old != null)        {
-            plist.Remove(old);
-            Save();
-            return true;
-        } else
+        lock(plist)
         {
-            return false;
+            Person? old = plist.FirstOrDefault(p => p.Id == id);
+            if (old != null)        {
+                plist.Remove(old);
+                Save();
+                return true;
+            } else
+            {
+                return false;
+            }
         }
     }
 
@@ -61,10 +69,15 @@ public class PersonListJson : IPersonConnector
         Person? old = plist.FirstOrDefault(p => p.Id == person.Id);
         if (old != null)
         {
-            old.FirstName = person.FirstName;
-            old.LastName = person.LastName;
-            old.Age = person.Age;
-            Save();
+            lock(plist)
+            {
+                logger.LogInformation($"Updating person with id {person.Id}");
+                old.FirstName = person.FirstName;
+                old.LastName = person.LastName;
+                old.Age = person.Age;
+                Save();
+                logger.LogInformation($"Person with id {person.Id} updated successfully");
+            }
             return true;
         } else
         {
