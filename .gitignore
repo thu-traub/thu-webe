@@ -3,6 +3,7 @@
 ##
 ## Get latest from `dotnet new gitignore`
 */users.txt
+*/key.txt
 
 node_modules/
 
