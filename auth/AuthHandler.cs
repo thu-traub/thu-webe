@@ -15,7 +15,23 @@ public class AuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 
     protected async override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        string username = "demo";
+        string? authheader = Request.Headers["Authorization"];
+        if (string.IsNullOrEmpty(authheader))
+        {
+            Response.Headers["WWW-Authenticate"] = "Basic realm=\"MyRealm\"";
+            return AuthenticateResult.Fail("Unauthorized");
+        }
+        string encodedCredentials = authheader.Substring("Basic ".Length).Trim();
+        byte[] credentialBytes = Convert.FromBase64String(encodedCredentials);
+        string[] credentials = System.Text.Encoding.UTF8.GetString(credentialBytes).Split(':', 2);
+        string username = credentials[0];
+        string password = credentials[1];
+        if (password != "demo123" || username != "admin")
+        {
+            Response.Headers["WWW-Authenticate"] = "Basic realm=\"MyRealm\"";
+            return AuthenticateResult.Fail("Unauthorized");
+        }
+
         var claims = new[]
         {
             new Claim(ClaimTypes.Name, username),
