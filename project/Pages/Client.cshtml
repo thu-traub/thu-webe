@@ -1,36 +1,39 @@
 @page
 
-<h1>Client Page</h1>
-<p>Person = <span id="name">...</span></p>
+<div class="text-left">
+    <h1 class="display-4">Person List</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Age</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="liste">
+        </tbody>
+    </table>
+</div>
 
 @section Scripts {
+    <script src="js/api.js"></script>
     <script>
-    let APIURL = "/api/person";
-
-    var API = {
-        getPerson: async function () {
-            let response = await fetch(`${APIURL}`);
-            return await response.json();
-        },
-        getPerson: async function (id) {
-            let response = await fetch(`${APIURL}/${id}`);
-            return await response.json();
-        },
-        updatePerson: async function (person) {
-            let response = await fetch(`${APIURL}/${person.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(person)
-            });
-            return await response.json();
-        }   
-    }
-
     async function loadPerson() {
-        let person = await API.getPerson(1);
-        document.getElementById("name").textContent = `${person.firstName} ${person.lastName}`;
+        let persons = await API.getPersons();
+        console.log(persons);
+        let html = "";
+        persons.forEach(p => {
+            html += `<tr>
+                        <td>${p.id}</td>
+                        <td>${p.firstName}</td>
+                        <td>${p.lastName}</td>
+                        <td>${p.age}</td>
+                        <td><a href="/Edit?id=${p.id}"><i class="fa-solid fa-pen"></i></a></td>
+                    </tr>`;
+        });
+        document.getElementById("liste").innerHTML = html;
     }
     loadPerson();
     </script>
