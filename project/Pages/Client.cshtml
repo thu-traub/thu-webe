@@ -1,0 +1,37 @@
+@page
+
+<h1>Client Page</h1>
+<p>Person = <span id="name">...</span></p>
+
+@section Scripts {
+    <script>
+    let APIURL = "/api/person";
+
+    var API = {
+        getPerson: async function () {
+            let response = await fetch(`${APIURL}`);
+            return await response.json();
+        },
+        getPerson: async function (id) {
+            let response = await fetch(`${APIURL}/${id}`);
+            return await response.json();
+        },
+        updatePerson: async function (person) {
+            let response = await fetch(`${APIURL}/${person.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(person)
+            });
+            return await response.json();
+        }   
+    }
+
+    async function loadPerson() {
+        let person = await API.getPerson(1);
+        document.getElementById("name").textContent = `${person.firstName} ${person.lastName}`;
+    }
+    loadPerson();
+    </script>
+}
