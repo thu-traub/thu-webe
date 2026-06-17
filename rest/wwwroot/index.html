@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hello World</h1>
+    <p>Name = "<span id="name">...</span>"</p>
+    <button onclick="change()">Change</button>
+<script>
+    let APIURL = "/api/person";
+    let person
+
+    var API = {
+        getPerson: async function (id) {
+            let response = await fetch(`${APIURL}/${id}`);
+            return await response.json();
+        },
+        updatePerson: async function (person) {
+            let response = await fetch(`${APIURL}/${person.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(person)
+            });
+            return await response.json();
+        }   
+    }
+
+    async function main() {
+        person = await API.getPerson(1);
+        console.log(person);
+        let nameElement = document.getElementById("name");
+        nameElement.textContent = person.name;
+    }
+
+    async function change() {
+        console.log(person);
+        person.name = "New Name"
+        let updatedPerson = await API.updatePerson(person);
+        console.log(updatedPerson);
+        main();
+    }
+    main();
+</script>
+</body>
+</html>

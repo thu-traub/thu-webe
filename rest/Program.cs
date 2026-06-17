@@ -15,6 +15,8 @@ app.MapOpenApi();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.MapGet("/", () => Results.File("index.html", "text/html"));
+
 app.MapGet("/api/person", () => DemoPerson);
 app.MapGet("/api/person/{id}", (int id) => DemoPerson.FirstOrDefault(p => p.Id == id));
 app.MapPost("/api/person", (Person person) =>
