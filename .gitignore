@@ -5,6 +5,9 @@
 */users.txt
 */key.txt
 
+site.zip
+
+local/
 node_modules/
 
 # dotenv files
