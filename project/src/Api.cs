@@ -7,11 +7,12 @@ public static class ApiExtensions
         app.MapGet(apiBasePath, (IPersonConnector personConnector) =>
         {
             return personConnector.Get();
-        });
+        }).RequireAuthorization();
+
         app.MapGet($"{apiBasePath}/{{id}}", (int id, IPersonConnector personConnector) =>
         {
             return personConnector.Get(id);
-        });
+        }).RequireAuthorization();
         return app;
     }
 }

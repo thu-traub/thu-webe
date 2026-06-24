@@ -62,6 +62,13 @@ public class AuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
             }
         }   
 
+        String? ruser = Request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"];
+        if (!string.IsNullOrEmpty(ruser)) {
+            username = ruser;
+            logger.LogInformation("User {username} authenticated via header", username);
+            return Success(username);
+        }
+
         string? authheader = Request.Headers["Authorization"];
         if (string.IsNullOrEmpty(authheader)) return Fail();
 
