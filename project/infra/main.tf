@@ -14,12 +14,20 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "~> 3.0"
+    }
   }
 }
 
 provider "azurerm" {
   features {}
 }
+
+provider "azuread" {}
+
+data "azurerm_client_config" "current" {}
 
 ###############################################################################
 # Variables
@@ -45,12 +53,35 @@ variable "easyauth" {
   type        = bool
 }
 
+locals {
+  app_registration_name = "${var.webapp_name}-auth"
+  easyauth_redirect_uri = "https://${var.webapp_name}.azurewebsites.net/.auth/login/aad/callback"
+}
+
 ###############################################################################
 # Resources
 ###############################################################################
 
 data "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
+}
+
+resource "azuread_application" "app_auth" {
+  count = var.easyauth ? 1 : 0
+
+  display_name = local.app_registration_name
+
+  web {
+    redirect_uris = [local.easyauth_redirect_uri]
+  }
+}
+
+resource "azuread_application_password" "app_auth" {
+  count = var.easyauth ? 1 : 0
+
+  application_id = azuread_application.app_auth[0].id
+  display_name   = "App Service auth secret"
+  end_date       = timeadd(timestamp(), "2160h")
 }
 
 resource "azurerm_service_plan" "plan" {
@@ -78,9 +109,32 @@ resource "azurerm_linux_web_app" "app" {
     }
   }
 
-  app_settings = {
-    "WEBSITE_RUN_FROM_PACKAGE" = "1"
+  dynamic "auth_settings_v2" {
+    for_each = var.easyauth ? [1] : []
+
+    content {
+      auth_enabled           = true
+      default_provider       = "azureactivedirectory"
+      unauthenticated_action = "RedirectToLoginPage"
+
+      login {}
+
+      active_directory_v2 {
+        client_id                  = azuread_application.app_auth[0].client_id
+        tenant_auth_endpoint       = "https://login.microsoftonline.com/${data.azurerm_client_config.current.tenant_id}/v2.0"
+        client_secret_setting_name = "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET"
+      }
+    }
   }
+
+  app_settings = merge(
+    {
+      "WEBSITE_RUN_FROM_PACKAGE" = "1"
+    },
+    var.easyauth ? {
+      "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET" = azuread_application_password.app_auth[0].value
+    } : {}
+  )
 }
 
 ###############################################################################
@@ -93,4 +147,8 @@ output "webapp_name" {
 
 output "webapp_url" {
   value = "https://${azurerm_linux_web_app.app.default_hostname}"
+}
+
+output "app_registration_client_id" {
+  value = var.easyauth ? azuread_application.app_auth[0].client_id : null
 }
