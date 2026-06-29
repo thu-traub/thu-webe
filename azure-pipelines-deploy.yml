@@ -64,6 +64,14 @@ stages:
 
                 Compress-Archive -Path "$publishPath/*" -DestinationPath $zipPath -Force
 
+          - task: PowerShell@2
+            displayName: Inspect publish output
+            inputs:
+              pwsh: true
+              targetType: inline
+              script: |
+                Get-ChildItem "$(Build.ArtifactStagingDirectory)/publish" -Recurse  
+
           - task: AzureCLI@2
             displayName: Deploy zip to App Service
             inputs:
@@ -73,6 +81,11 @@ stages:
               inlineScript: |
                 $ErrorActionPreference = 'Stop'
 
+                az webapp config appsettings set `
+                  --resource-group "$(resourceGroupName)" `
+                  --name "$(webAppName)" `
+                  --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
+                  
                 az webapp deploy `
                   --resource-group "$(resourceGroupName)" `
                   --name "$(webAppName)" `
