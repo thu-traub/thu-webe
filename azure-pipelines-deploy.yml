@@ -72,6 +72,15 @@ stages:
               script: |
                 Get-ChildItem "$(Build.ArtifactStagingDirectory)/publish" -Recurse  
 
+          - task: PowerShell@2
+            displayName: Inspect zip
+            inputs:
+              pwsh: true
+              targetType: inline
+              script: |
+                Expand-Archive "$(Build.ArtifactStagingDirectory)/site.zip" "$(Build.ArtifactStagingDirectory)/check"
+                Get-ChildItem "$(Build.ArtifactStagingDirectory)/check" -Recurse
+
           - task: AzureCLI@2
             displayName: Deploy zip to App Service
             inputs:
@@ -81,13 +90,7 @@ stages:
               inlineScript: |
                 $ErrorActionPreference = 'Stop'
 
-                az webapp config appsettings set `
+                az webapp deployment source config-zip `
                   --resource-group "$(resourceGroupName)" `
                   --name "$(webAppName)" `
-                  --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
-                  
-                az webapp deploy `
-                  --resource-group "$(resourceGroupName)" `
-                  --name "$(webAppName)" `
-                  --src-path "$(Build.ArtifactStagingDirectory)/site.zip" `
-                  --type zip
+                  --src "$(Build.ArtifactStagingDirectory)/site.zip"
