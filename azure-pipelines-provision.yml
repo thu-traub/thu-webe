@@ -1,0 +1,61 @@
+trigger:
+  branches:
+    include:
+      - test
+  paths:
+    include:
+      - project/infra/*
+      - azure-pipelines-provision.yml
+
+pr: none
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  azureServiceConnection: webe-demo-test
+  terraformWorkingDirectory: project/infra
+  resourceGroupName: rg-WEBE
+  location: westeurope
+  webAppName: thu-st-webe-demo-01
+  easyAuth: false
+
+stages:
+  - stage: Provision
+    displayName: Provision infrastructure with Terraform
+    jobs:
+      - job: TerraformApply
+        displayName: Terraform init, plan, apply
+        steps:
+          - checkout: self
+
+          - powershell: |
+              $ErrorActionPreference = 'Stop'
+              if (-not (Get-Command terraform -ErrorAction SilentlyContinue)) {
+                choco install terraform -y
+              }
+              terraform version
+            displayName: Ensure Terraform is installed
+
+          - task: AzureCLI@2
+            displayName: Terraform apply
+            inputs:
+              azureSubscription: $(azureServiceConnection)
+              scriptType: pscore
+              scriptLocation: inlineScript
+              inlineScript: |
+                $ErrorActionPreference = 'Stop'
+
+                terraform -chdir="$(terraformWorkingDirectory)" init -upgrade
+
+                terraform -chdir="$(terraformWorkingDirectory)" plan `
+                  -var "resource_group_name=$(resourceGroupName)" `
+                  -var "location=$(location)" `
+                  -var "webapp_name=$(webAppName)" `
+                  -var "easyauth=$(easyAuth)"
+
+                terraform -chdir="$(terraformWorkingDirectory)" apply -auto-approve `
+                  -var "resource_group_name=$(resourceGroupName)" `
+                  -var "location=$(location)" `
+                  -var "webapp_name=$(webAppName)" `
+                  -var "easyauth=$(easyAuth)"

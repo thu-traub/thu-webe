@@ -1,0 +1,78 @@
+trigger:
+  branches:
+    include:
+      - test
+  paths:
+    include:
+      - project/*
+      - azure-pipelines-deploy.yml
+
+pr: none
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  azureServiceConnection: webe-demo-test
+  projectFile: project/project.csproj
+  projectDir: project
+  resourceGroupName: rg-WEBE
+  webAppName: thu-st-webe-demo-01
+
+stages:
+  - stage: Deploy
+    displayName: Deploy web app package
+    jobs:
+      - job: ZipDeploy
+        displayName: Publish and deploy zip package
+        steps:
+          - checkout: self
+
+          - task: UseDotNet@2
+            displayName: Use .NET SDK 10.x
+            inputs:
+              packageType: sdk
+              version: 10.x
+
+          - task: DotNetCoreCLI@2
+            displayName: Publish app
+            inputs:
+              command: publish
+              projects: $(projectFile)
+              arguments: -c Release -o "$(Build.ArtifactStagingDirectory)/publish"
+              publishWebProjects: false
+
+          - task: PowerShell@2
+            displayName: Build deployment zip
+            inputs:
+              pwsh: true
+              targetType: inline
+              script: |
+                $ErrorActionPreference = 'Stop'
+
+                $publishPath = "$(Build.ArtifactStagingDirectory)/publish"
+                $zipPath = "$(Build.ArtifactStagingDirectory)/site.zip"
+
+                Copy-Item "$(Build.SourcesDirectory)/$(projectDir)/users.txt" $publishPath -Force
+                Copy-Item "$(Build.SourcesDirectory)/$(projectDir)/key.txt" $publishPath -Force
+
+                if (Test-Path $zipPath) {
+                  Remove-Item $zipPath -Force
+                }
+
+                Compress-Archive -Path "$publishPath/*" -DestinationPath $zipPath -Force
+
+          - task: AzureCLI@2
+            displayName: Deploy zip to App Service
+            inputs:
+              azureSubscription: $(azureServiceConnection)
+              scriptType: pscore
+              scriptLocation: inlineScript
+              inlineScript: |
+                $ErrorActionPreference = 'Stop'
+
+                az webapp deploy `
+                  --resource-group "$(resourceGroupName)" `
+                  --name "$(webAppName)" `
+                  --src-path "$(Build.ArtifactStagingDirectory)/site.zip" `
+                  --type zip
