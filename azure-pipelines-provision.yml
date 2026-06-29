@@ -18,7 +18,7 @@ variables:
   resourceGroupName: rg-WEBE
   location: westeurope
   webAppName: thu-st-webe-demo-01
-  easyAuth: false
+  easyAuth: true
 
 stages:
   - stage: Provision
