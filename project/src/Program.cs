@@ -10,6 +10,7 @@ AddScheme<AuthenticationSchemeOptions, AuthHandler>("mydemo", options => { });
 
 WebApplication app = builder.Build();
 
+// Process request pipeline.
 app.UseHttpsRedirection();
 
 app.UseRouting();

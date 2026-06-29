@@ -4,6 +4,7 @@ $ProjectDir = "$PSScriptRoot\..\project"
 $ProjectFile = "$ProjectDir\project.csproj"
 $PubPath = "$PSScriptRoot\..\pub"
 $WebAppName = "thu-st-webe-demo-01"
+$AppRegistrationName = "$WebAppName-auth"
 $AppServicePlanName = "asp-$WebAppName"
 $Location = "westeurope"
 
