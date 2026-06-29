@@ -19,6 +19,10 @@ variables:
   location: westeurope
   webAppName: thu-st-webe-demo-01
   easyAuth: true
+  backendResourceGroupName: rg-tfstate
+  backendStorageAccountName: thuifisttfwebe
+  backendContainerName: tfstate
+  backendStateKey: webapp-dev.tfstate
 
 stages:
   - stage: Provision
@@ -29,70 +33,55 @@ stages:
         steps:
           - checkout: self
 
-          - powershell: |
-              $ErrorActionPreference = 'Stop'
-              if (-not (Get-Command terraform -ErrorAction SilentlyContinue)) {
-                choco install terraform -y
-              }
-              terraform version
-            displayName: Ensure Terraform is installed
+          - task: TerraformInstaller@1
+            displayName: Install Terraform
+            inputs:
+              terraformVersion: latest
 
-          - task: AzureCLI@2
+          - task: TerraformTaskV4@4
+            displayName: Terraform init
+            inputs:
+              provider: azurerm
+              command: init
+              workingDirectory: $(terraformWorkingDirectory)
+              backendServiceArm: $(azureServiceConnection)
+              backendAzureRmResourceGroupName: $(backendResourceGroupName)
+              backendAzureRmStorageAccountName: $(backendStorageAccountName)
+              backendAzureRmContainerName: $(backendContainerName)
+              backendAzureRmKey: $(backendStateKey)
+            env:
+              ARM_USE_AZUREAD: true
+              ARM_STORAGE_USE_AZUREAD: true
+
+          - task: TerraformTaskV4@4
+            displayName: Terraform plan
+            inputs:
+              provider: azurerm
+              command: plan
+              workingDirectory: $(terraformWorkingDirectory)
+              environmentServiceNameAzureRM: $(azureServiceConnection)
+              commandOptions: >-
+                -var "resource_group_name=$(resourceGroupName)"
+                -var "location=$(location)"
+                -var "webapp_name=$(webAppName)"
+                -var "easyauth=$(easyAuth)"
+            env:
+              ARM_USE_AZUREAD: true
+              ARM_STORAGE_USE_AZUREAD: true
+
+          - task: TerraformTaskV4@4
             displayName: Terraform apply
             inputs:
-              azureSubscription: $(azureServiceConnection)
-              addSpnToEnvironment: true
-              scriptType: pscore
-              scriptLocation: inlineScript
-              inlineScript: |
-                $ErrorActionPreference = 'Stop'
-                $PSNativeCommandUseErrorActionPreference = $true
-
-                $backendResourceGroup = 'rg-tfstate'
-                $backendStorageAccount = 'thuifisttfwebe'
-                $backendContainer = 'tfstate'
-
-                # Ensure Terraform uses Entra ID auth for backend/state operations.
-                $env:ARM_USE_AZUREAD = 'true'
-                $env:ARM_STORAGE_USE_AZUREAD = 'true'
-
-                Write-Host "Signed-in account:"
-                az account show --query "{name:name,id:id,tenantId:tenantId,user:user.name}" -o table
-
-                Write-Host "Service connection principal (client id): $env:servicePrincipalId"
-                $subscriptionId = az account show --query id --output tsv
-                $storageScope = "/subscriptions/$subscriptionId/resourceGroups/$backendResourceGroup/providers/Microsoft.Storage/storageAccounts/$backendStorageAccount"
-                Write-Host "Storage scope: $storageScope"
-                Write-Host "Attempting role assignment lookup (non-blocking)..."
-                try {
-                  az role assignment list `
-                    --assignee $env:servicePrincipalId `
-                    --scope $storageScope `
-                    --query "[].{role:roleDefinitionName,scope:scope,principalId:principalId}" `
-                    --output table
-                }
-                catch {
-                  Write-Warning "Role assignment lookup requires additional control-plane permissions; continuing to data-plane validation."
-                }
-
-                Write-Host "Validating data-plane access to Terraform state container..."
-                az storage blob list `
-                  --account-name $backendStorageAccount `
-                  --container-name $backendContainer `
-                  --auth-mode login `
-                  --num-results 1 `
-                  --output table
-
-                terraform -chdir="$(terraformWorkingDirectory)" init -upgrade -reconfigure
-
-                terraform -chdir="$(terraformWorkingDirectory)" plan `
-                  -var "resource_group_name=$(resourceGroupName)" `
-                  -var "location=$(location)" `
-                  -var "webapp_name=$(webAppName)" `
-                  -var "easyauth=$(easyAuth)"
-
-                terraform -chdir="$(terraformWorkingDirectory)" apply -auto-approve `
-                  -var "resource_group_name=$(resourceGroupName)" `
-                  -var "location=$(location)" `
-                  -var "webapp_name=$(webAppName)" `
-                  -var "easyauth=$(easyAuth)"
+              provider: azurerm
+              command: apply
+              workingDirectory: $(terraformWorkingDirectory)
+              environmentServiceNameAzureRM: $(azureServiceConnection)
+              commandOptions: >-
+                -auto-approve
+                -var "resource_group_name=$(resourceGroupName)"
+                -var "location=$(location)"
+                -var "webapp_name=$(webAppName)"
+                -var "easyauth=$(easyAuth)"
+            env:
+              ARM_USE_AZUREAD: true
+              ARM_STORAGE_USE_AZUREAD: true
