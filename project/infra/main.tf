@@ -73,6 +73,10 @@ resource "azuread_application" "app_auth" {
 
   web {
     redirect_uris = [local.easyauth_redirect_uri]
+
+    implicit_grant {
+      id_token_issuance_enabled = true
+    }
   }
 }
 
