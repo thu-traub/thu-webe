@@ -132,9 +132,7 @@ resource "azurerm_linux_web_app" "app" {
   }
 
   app_settings = merge(
-    {
-      "WEBSITE_RUN_FROM_PACKAGE" = "1"
-    },
+    {},
     var.easyauth ? {
       "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET" = azuread_application_password.app_auth[0].value
     } : {}

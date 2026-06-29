@@ -70,7 +70,7 @@ stages:
             displayName: Deploy zip to App Service
             inputs:
               azureSubscription: $(azureServiceConnection)
-              appType: webApp
+              appType: webAppLinux
               appName: $(webAppName)
               resourceGroupName: $(resourceGroupName)
               package: $(packagePath)
