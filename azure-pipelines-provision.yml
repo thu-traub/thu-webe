@@ -60,20 +60,20 @@ stages:
                 az account show --query "{name:name,id:id,tenantId:tenantId,user:user.name}" -o table
 
                 Write-Host "Service connection principal (client id): $env:servicePrincipalId"
-                Write-Host "Resolving storage account scope..."
-                $storageScope = az storage account show `
-                  --name $backendStorageAccount `
-                  --resource-group $backendResourceGroup `
-                  --query id `
-                  --output tsv
-
+                $subscriptionId = az account show --query id --output tsv
+                $storageScope = "/subscriptions/$subscriptionId/resourceGroups/$backendResourceGroup/providers/Microsoft.Storage/storageAccounts/$backendStorageAccount"
                 Write-Host "Storage scope: $storageScope"
-                Write-Host "Current role assignments for this principal on storage scope:"
-                az role assignment list `
-                  --assignee $env:servicePrincipalId `
-                  --scope $storageScope `
-                  --query "[].{role:roleDefinitionName,scope:scope,principalId:principalId}" `
-                  --output table
+                Write-Host "Attempting role assignment lookup (non-blocking)..."
+                try {
+                  az role assignment list `
+                    --assignee $env:servicePrincipalId `
+                    --scope $storageScope `
+                    --query "[].{role:roleDefinitionName,scope:scope,principalId:principalId}" `
+                    --output table
+                }
+                catch {
+                  Write-Warning "Role assignment lookup requires additional control-plane permissions; continuing to data-plane validation."
+                }
 
                 Write-Host "Validating data-plane access to Terraform state container..."
                 az storage blob list `
