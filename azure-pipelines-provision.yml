@@ -41,12 +41,28 @@ stages:
             displayName: Terraform apply
             inputs:
               azureSubscription: $(azureServiceConnection)
+              addSpnToEnvironment: true
               scriptType: pscore
               scriptLocation: inlineScript
               inlineScript: |
                 $ErrorActionPreference = 'Stop'
 
-                terraform -chdir="$(terraformWorkingDirectory)" init -upgrade
+                # Ensure Terraform uses Entra ID auth for backend/state operations.
+                $env:ARM_USE_AZUREAD = 'true'
+                $env:ARM_STORAGE_USE_AZUREAD = 'true'
+
+                Write-Host "Signed-in account:"
+                az account show --query "{name:name,id:id,tenantId:tenantId,user:user.name}" -o table
+
+                Write-Host "Validating data-plane access to Terraform state container..."
+                az storage blob list `
+                  --account-name thuifisttfwebe `
+                  --container-name tfstate `
+                  --auth-mode login `
+                  --num-results 1 `
+                  --output table
+
+                terraform -chdir="$(terraformWorkingDirectory)" init -upgrade -reconfigure
 
                 terraform -chdir="$(terraformWorkingDirectory)" plan `
                   -var "resource_group_name=$(resourceGroupName)" `
