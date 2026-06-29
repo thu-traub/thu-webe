@@ -18,6 +18,8 @@ variables:
   projectDir: project
   resourceGroupName: rg-WEBE
   webAppName: thu-st-webe-demo-01
+  publishDir: $(Build.ArtifactStagingDirectory)/publish
+  packagePath: $(Build.ArtifactStagingDirectory)/site.zip
 
 stages:
   - stage: Deploy
@@ -39,58 +41,37 @@ stages:
             inputs:
               command: publish
               projects: $(projectFile)
-              arguments: -c Release -o "$(Build.ArtifactStagingDirectory)/publish"
               publishWebProjects: false
+              arguments: -c Release -o "$(publishDir)"
+              zipAfterPublish: false
+              modifyOutputPath: false
 
-          - task: PowerShell@2
+          - task: CopyFiles@2
+            displayName: Copy runtime text files
+            inputs:
+              SourceFolder: $(Build.SourcesDirectory)/$(projectDir)
+              Contents: |
+                users.txt
+                key.txt
+              TargetFolder: $(publishDir)
+              OverWrite: true
+              flattenFolders: true
+
+          - task: ArchiveFiles@2
             displayName: Build deployment zip
             inputs:
-              pwsh: true
-              targetType: inline
-              script: |
-                $ErrorActionPreference = 'Stop'
+              rootFolderOrFile: $(publishDir)
+              includeRootFolder: false
+              archiveType: zip
+              archiveFile: $(packagePath)
+              replaceExistingArchive: true
 
-                $publishPath = "$(Build.ArtifactStagingDirectory)/publish"
-                $zipPath = "$(Build.ArtifactStagingDirectory)/site.zip"
-
-                $ufile = "$(Build.SourcesDirectory)/$(projectDir)/users.txt"
-                $keyFile = "$(Build.SourcesDirectory)/$(projectDir)/key.txt"
-                if (Test-Path $ufile) { Copy-Item $ufile $publishPath -Force }
-                if (Test-Path $keyFile) { Copy-Item $keyFile $publishPath -Force }
-
-                if (Test-Path $zipPath) {
-                  Remove-Item $zipPath -Force
-                }
-
-                Compress-Archive -Path "$publishPath/*" -DestinationPath $zipPath -Force
-
-          - task: PowerShell@2
-            displayName: Inspect publish output
-            inputs:
-              pwsh: true
-              targetType: inline
-              script: |
-                Get-ChildItem "$(Build.ArtifactStagingDirectory)/publish" -Recurse  
-
-          - task: PowerShell@2
-            displayName: Inspect zip
-            inputs:
-              pwsh: true
-              targetType: inline
-              script: |
-                Expand-Archive "$(Build.ArtifactStagingDirectory)/site.zip" "$(Build.ArtifactStagingDirectory)/check"
-                Get-ChildItem "$(Build.ArtifactStagingDirectory)/check" -Recurse
-
-          - task: AzureCLI@2
+          - task: AzureWebApp@1
             displayName: Deploy zip to App Service
             inputs:
               azureSubscription: $(azureServiceConnection)
-              scriptType: pscore
-              scriptLocation: inlineScript
-              inlineScript: |
-                $ErrorActionPreference = 'Stop'
-
-                az webapp deployment source config-zip `
-                  --resource-group "$(resourceGroupName)" `
-                  --name "$(webAppName)" `
-                  --src "$(Build.ArtifactStagingDirectory)/site.zip"
+              appType: webAppLinux
+              appName: $(webAppName)
+              resourceGroupName: $(resourceGroupName)
+              package: $(packagePath)
+              deploymentMethod: zipDeploy
