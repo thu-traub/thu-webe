@@ -53,8 +53,10 @@ stages:
                 $publishPath = "$(Build.ArtifactStagingDirectory)/publish"
                 $zipPath = "$(Build.ArtifactStagingDirectory)/site.zip"
 
-                Copy-Item "$(Build.SourcesDirectory)/$(projectDir)/users.txt" $publishPath -Force
-                Copy-Item "$(Build.SourcesDirectory)/$(projectDir)/key.txt" $publishPath -Force
+                $ufile = "$(Build.SourcesDirectory)/$(projectDir)/users.txt"
+                $keyFile = "$(Build.SourcesDirectory)/$(projectDir)/key.txt"
+                if (Test-Path $ufile) { Copy-Item $ufile $publishPath -Force }
+                if (Test-Path $keyFile) { Copy-Item $keyFile $publishPath -Force }
 
                 if (Test-Path $zipPath) {
                   Remove-Item $zipPath -Force
