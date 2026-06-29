@@ -10,7 +10,7 @@ trigger:
 pr: none
 
 pool:
-  vmImage: windows-latest
+  vmImage: ubuntu-latest
 
 variables:
   azureServiceConnection: webe-demo-test
@@ -22,7 +22,6 @@ variables:
   backendResourceGroupName: rg-tfstate
   backendStorageAccountName: thuifisttfwebe
   backendContainerName: tfstate
-  backendStateKey: webapp-dev.tfstate
 
 stages:
   - stage: Provision
@@ -33,55 +32,59 @@ stages:
         steps:
           - checkout: self
 
-          - task: TerraformInstaller@1
-            displayName: Install Terraform
+          - task: AzureCLI@2
+            displayName: Terraform init, plan, apply
             inputs:
-              terraformVersion: latest
+              azureSubscription: $(azureServiceConnection)
+              addSpnToEnvironment: true
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -euo pipefail
 
-          - task: TerraformTaskV4@4
-            displayName: Terraform init
-            inputs:
-              provider: azurerm
-              command: init
-              workingDirectory: $(terraformWorkingDirectory)
-              backendServiceArm: $(azureServiceConnection)
-              backendAzureRmResourceGroupName: $(backendResourceGroupName)
-              backendAzureRmStorageAccountName: $(backendStorageAccountName)
-              backendAzureRmContainerName: $(backendContainerName)
-              backendAzureRmKey: $(backendStateKey)
-            env:
-              ARM_USE_AZUREAD: true
-              ARM_STORAGE_USE_AZUREAD: true
+                if ! command -v terraform >/dev/null 2>&1; then
+                  echo "Terraform not found on agent. Installing Terraform..."
+                  wget -qO- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+                  echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+                  sudo apt-get update
+                  sudo apt-get install -y terraform
+                fi
 
-          - task: TerraformTaskV4@4
-            displayName: Terraform plan
-            inputs:
-              provider: azurerm
-              command: plan
-              workingDirectory: $(terraformWorkingDirectory)
-              environmentServiceNameAzureRM: $(azureServiceConnection)
-              commandOptions: >-
-                -var "resource_group_name=$(resourceGroupName)"
-                -var "location=$(location)"
-                -var "webapp_name=$(webAppName)"
-                -var "easyauth=$(easyAuth)"
-            env:
-              ARM_USE_AZUREAD: true
-              ARM_STORAGE_USE_AZUREAD: true
+                terraform version
 
-          - task: TerraformTaskV4@4
-            displayName: Terraform apply
-            inputs:
-              provider: azurerm
-              command: apply
-              workingDirectory: $(terraformWorkingDirectory)
-              environmentServiceNameAzureRM: $(azureServiceConnection)
-              commandOptions: >-
-                -auto-approve
-                -var "resource_group_name=$(resourceGroupName)"
-                -var "location=$(location)"
-                -var "webapp_name=$(webAppName)"
-                -var "easyauth=$(easyAuth)"
-            env:
-              ARM_USE_AZUREAD: true
-              ARM_STORAGE_USE_AZUREAD: true
+                export ARM_USE_AZUREAD=true
+                export ARM_STORAGE_USE_AZUREAD=true
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                export ARM_TENANT_ID="$tenantId"
+                export ARM_SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
+
+                # Federated service connections expose an ID token instead of a client secret.
+                if [ -n "${idToken:-}" ]; then
+                  export ARM_USE_OIDC=true
+                  export ARM_OIDC_TOKEN="$idToken"
+                elif [ -n "${servicePrincipalKey:-}" ]; then
+                  export ARM_CLIENT_SECRET="$servicePrincipalKey"
+                fi
+
+                cd "$(terraformWorkingDirectory)"
+
+                terraform init \
+                  -upgrade \
+                  -reconfigure \
+                  -backend-config="resource_group_name=$(backendResourceGroupName)" \
+                  -backend-config="storage_account_name=$(backendStorageAccountName)" \
+                  -backend-config="container_name=$(backendContainerName)" \
+                  -backend-config="key=$(webAppName).tfstate" \
+                  -backend-config="use_azuread_auth=true"
+
+                terraform plan \
+                  -var "resource_group_name=$(resourceGroupName)" \
+                  -var "location=$(location)" \
+                  -var "webapp_name=$(webAppName)" \
+                  -var "easyauth=$(easyAuth)"
+
+                terraform apply -auto-approve \
+                  -var "resource_group_name=$(resourceGroupName)" \
+                  -var "location=$(location)" \
+                  -var "webapp_name=$(webAppName)" \
+                  -var "easyauth=$(easyAuth)"
