@@ -1,32 +1,3 @@
-terraform {
-  required_version = ">= 1.6.0"
-
-  backend "azurerm" {
-    resource_group_name  = "rg-tfstate"
-    storage_account_name = "thuifisttfwebe" # Replace with your storage account
-    container_name       = "tfstate"
-    key                  = "webapp-dev.tfstate"
-    use_azuread_auth     = true
-  }
-
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "~> 3.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-provider "azuread" {}
-
 data "azurerm_client_config" "current" {}
 
 ###############################################################################
@@ -66,10 +37,16 @@ data "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
 }
 
+data "azuread_client_config" "current" {}
+
 resource "azuread_application" "app_auth" {
   count = var.easyauth ? 1 : 0
 
   display_name = local.app_registration_name
+
+  owners = [
+    data.azuread_client_config.current.object_id
+  ]
 
   web {
     redirect_uris = [local.easyauth_redirect_uri]

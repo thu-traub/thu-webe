@@ -1,0 +1,36 @@
+terraform {
+  required_version = ">= 1.6.0"
+
+  backend "azurerm" {
+    resource_group_name  = "rg-ifi-st-01"
+    storage_account_name = "thuifistlect" # Replace with your storage account
+    container_name       = "tfstate"
+    key                  = "webapp-prod.tfstate"
+    use_azuread_auth     = true
+  }
+
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "~> 3.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+
+  resource_provider_registrations = "none"
+}
+
+module "modules" {
+  source = "../modules"
+  resource_group_name = "rg-ifi-st-01"
+  location            = "West Europe"
+  webapp_name         = "thu-st-webe-demo-02"
+  easyauth            = true
+}

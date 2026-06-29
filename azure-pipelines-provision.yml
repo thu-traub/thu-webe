@@ -1,11 +1,11 @@
-trigger:
-  branches:
-    include:
-      - test
-  paths:
-    include:
-      - project/infra/*
-      - azure-pipelines-provision.yml
+trigger: none
+  # branches:
+  #   include:
+  #     - test
+  # paths:
+  #   include:
+  #     - project/infra/*
+  #     - azure-pipelines-provision.yml
 
 pr: none
 
@@ -17,7 +17,7 @@ variables:
   terraformWorkingDirectory: project/infra
   resourceGroupName: rg-WEBE
   location: westeurope
-  webAppName: thu-st-webe-demo-01
+  webAppName: thu-st-webe-demo-02
   easyAuth: true
   backendResourceGroupName: rg-tfstate
   backendStorageAccountName: thuifisttfwebe

@@ -17,7 +17,7 @@ variables:
   projectFile: project/project.csproj
   projectDir: project
   resourceGroupName: rg-WEBE
-  webAppName: thu-st-webe-demo-01
+  webAppName: thu-st-webe-demo-02
   publishDir: $(Build.ArtifactStagingDirectory)/publish
   packagePath: $(Build.ArtifactStagingDirectory)/site.zip
 
