@@ -4,8 +4,8 @@
 ## Get latest from `dotnet new gitignore`
 */users.txt
 */key.txt
-
-site.zip
+pub
+.terraform
 
 node_modules/
 
