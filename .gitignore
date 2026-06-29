@@ -7,7 +7,6 @@
 
 site.zip
 
-local/
 node_modules/
 
 # dotenv files
