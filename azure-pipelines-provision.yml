@@ -46,6 +46,11 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 $ErrorActionPreference = 'Stop'
+                $PSNativeCommandUseErrorActionPreference = $true
+
+                $backendResourceGroup = 'rg-tfstate'
+                $backendStorageAccount = 'thuifisttfwebe'
+                $backendContainer = 'tfstate'
 
                 # Ensure Terraform uses Entra ID auth for backend/state operations.
                 $env:ARM_USE_AZUREAD = 'true'
@@ -54,10 +59,26 @@ stages:
                 Write-Host "Signed-in account:"
                 az account show --query "{name:name,id:id,tenantId:tenantId,user:user.name}" -o table
 
+                Write-Host "Service connection principal (client id): $env:servicePrincipalId"
+                Write-Host "Resolving storage account scope..."
+                $storageScope = az storage account show `
+                  --name $backendStorageAccount `
+                  --resource-group $backendResourceGroup `
+                  --query id `
+                  --output tsv
+
+                Write-Host "Storage scope: $storageScope"
+                Write-Host "Current role assignments for this principal on storage scope:"
+                az role assignment list `
+                  --assignee $env:servicePrincipalId `
+                  --scope $storageScope `
+                  --query "[].{role:roleDefinitionName,scope:scope,principalId:principalId}" `
+                  --output table
+
                 Write-Host "Validating data-plane access to Terraform state container..."
                 az storage blob list `
-                  --account-name thuifisttfwebe `
-                  --container-name tfstate `
+                  --account-name $backendStorageAccount `
+                  --container-name $backendContainer `
                   --auth-mode login `
                   --num-results 1 `
                   --output table
