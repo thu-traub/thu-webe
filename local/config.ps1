@@ -3,12 +3,12 @@ $cenv = "test"
 $ProjectDir = "$PSScriptRoot\..\project"
 $ProjectFile = "$ProjectDir\project.csproj"
 $PubPath = "$PSScriptRoot\..\pub"
-$WebAppName = "thu-st-webe-demo-01"
+$WebAppName = "thu-st-webe-demo-02"
 $AppRegistrationName = "$WebAppName-auth"
 $AppServicePlanName = "asp-$WebAppName"
 $Location = "westeurope"
 
-if ($cenv -eq "test") {
+if ($cenv -eq "prod") {
 
     $TenantId = "0f5e575c8-bc9f-41b2-b31c-a67bfd9f16ce"
     $ResourceGroupName = "rg-WEBE"
