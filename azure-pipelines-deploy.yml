@@ -19,6 +19,6 @@ stages:
       stageName: Deploy_Prod
       environmentName: prod
       branchName: refs/heads/prod
-      resourceGroupName: rg-WEBE-PROD
-      webAppName: thu-st-webe-prod-02
+      resourceGroupName: rg-ifi-st-01
+      webAppName: thu-st-webe-demo-02
       azureServiceConnection: webe-demo-prod
