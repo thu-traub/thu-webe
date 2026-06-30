@@ -11,7 +11,7 @@ stages:
       environmentName: test
       branchName: refs/heads/test
       resourceGroupName: rg-WEBE
-      webAppName: thu-st-webe-demo-02
+      webAppName: thu-st-webe-demo-01
       azureServiceConnection: webe-demo-test
 
   - template: deploy-webapp.yml
