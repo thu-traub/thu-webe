@@ -2,76 +2,23 @@ trigger:
   branches:
     include:
       - test
-  paths:
-    include:
-      - project/*
-      - azure-pipelines-deploy.yml
-
-pr: none
-
-pool:
-  vmImage: windows-latest
-
-variables:
-  azureServiceConnection: webe-demo-test
-  projectFile: project/project.csproj
-  projectDir: project
-  resourceGroupName: rg-WEBE
-  webAppName: thu-st-webe-demo-02
-  publishDir: $(Build.ArtifactStagingDirectory)/publish
-  packagePath: $(Build.ArtifactStagingDirectory)/site.zip
+      - prod
 
 stages:
-  - stage: Deploy
-    displayName: Deploy web app package
-    jobs:
-      - job: ZipDeploy
-        displayName: Publish and deploy zip package
-        steps:
-          - checkout: self
+  - template: templates/deploy-webapp.yml
+    parameters:
+      stageName: Deploy_Test
+      environmentName: test
+      branchName: refs/heads/test
+      resourceGroupName: rg-WEBE
+      webAppName: thu-st-webe-demo-02
+      azureServiceConnection: webe-demo-test
 
-          - task: UseDotNet@2
-            displayName: Use .NET SDK 10.x
-            inputs:
-              packageType: sdk
-              version: 10.x
-
-          - task: DotNetCoreCLI@2
-            displayName: Publish app
-            inputs:
-              command: publish
-              projects: $(projectFile)
-              publishWebProjects: false
-              arguments: -c Release -o "$(publishDir)"
-              zipAfterPublish: false
-              modifyOutputPath: false
-
-          - task: CopyFiles@2
-            displayName: Copy runtime text files
-            inputs:
-              SourceFolder: $(Build.SourcesDirectory)/$(projectDir)
-              Contents: |
-                users.txt
-                key.txt
-              TargetFolder: $(publishDir)
-              OverWrite: true
-              flattenFolders: true
-
-          - task: ArchiveFiles@2
-            displayName: Build deployment zip
-            inputs:
-              rootFolderOrFile: $(publishDir)
-              includeRootFolder: false
-              archiveType: zip
-              archiveFile: $(packagePath)
-              replaceExistingArchive: true
-
-          - task: AzureWebApp@1
-            displayName: Deploy zip to App Service
-            inputs:
-              azureSubscription: $(azureServiceConnection)
-              appType: webAppLinux
-              appName: $(webAppName)
-              resourceGroupName: $(resourceGroupName)
-              package: $(packagePath)
-              deploymentMethod: zipDeploy
+  - template: templates/deploy-webapp.yml
+    parameters:
+      stageName: Deploy_Prod
+      environmentName: prod
+      branchName: refs/heads/prod
+      resourceGroupName: rg-WEBE-PROD
+      webAppName: thu-st-webe-prod-02
+      azureServiceConnection: webe-demo-prod

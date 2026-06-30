@@ -21,6 +21,12 @@ terraform {
   }
 }
 
+provider "azurerm" {
+  features {}
+
+  resource_provider_registrations = "none"
+}
+
 module "modules" {
   source = "../modules"
   resource_group_name = "rg-WEBE"

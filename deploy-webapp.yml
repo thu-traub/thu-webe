@@ -1,0 +1,72 @@
+parameters:
+  stageName: ''
+  environmentName: ''
+  branchName: ''
+  resourceGroupName: ''
+  webAppName: ''
+  azureServiceConnection: ''
+
+stages:
+  - stage: ${{ parameters.stageName }}
+    displayName: Deploy to ${{ parameters.environmentName }}
+    condition: eq(variables['Build.SourceBranch'], '${{ parameters.branchName }}')
+
+    variables:
+      projectFile: project/project.csproj
+      projectDir: project
+      publishDir: $(Build.ArtifactStagingDirectory)/publish
+      packagePath: $(Build.ArtifactStagingDirectory)/site.zip
+      resourceGroupName: ${{ parameters.resourceGroupName }}
+      webAppName: ${{ parameters.webAppName }}
+      azureServiceConnection: ${{ parameters.azureServiceConnection }}
+
+    jobs:
+      - deployment: DeployWebApp
+        displayName: Deploy to ${{ parameters.environmentName }}
+        environment: ${{ parameters.environmentName }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: UseDotNet@2
+                  inputs:
+                    packageType: sdk
+                    version: 10.x
+
+                - task: DotNetCoreCLI@2
+                  inputs:
+                    command: publish
+                    projects: $(projectFile)
+                    publishWebProjects: false
+                    arguments: -c Release -o "$(publishDir)"
+                    zipAfterPublish: false
+                    modifyOutputPath: false
+
+                - task: CopyFiles@2
+                  inputs:
+                    SourceFolder: $(Build.SourcesDirectory)/$(projectDir)
+                    Contents: |
+                      users.txt
+                      key.txt
+                    TargetFolder: $(publishDir)
+                    OverWrite: true
+                    flattenFolders: true
+
+                - task: ArchiveFiles@2
+                  inputs:
+                    rootFolderOrFile: $(publishDir)
+                    includeRootFolder: false
+                    archiveType: zip
+                    archiveFile: $(packagePath)
+                    replaceExistingArchive: true
+
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: ${{ parameters.azureServiceConnection }}
+                    appType: webAppLinux
+                    appName: $(webAppName)
+                    resourceGroupName: $(resourceGroupName)
+                    package: $(packagePath)
+                    deploymentMethod: zipDeploy
