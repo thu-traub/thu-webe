@@ -2,6 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSingleton<IMyArray, MyArray>();
 
 var app = builder.Build();
 
@@ -14,6 +15,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapGet("/api", (IMyArray myArray) => myArray.Names);
 
 app.UseRouting();
 

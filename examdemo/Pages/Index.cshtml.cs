@@ -5,13 +5,14 @@ namespace examdemo.Pages;
 
 public class IndexModel : PageModel
 {
-    public string[] Names { get; set; } = new string[] { "Alice", "Bob", "Charlie" };
 
     private readonly ILogger<IndexModel> _logger;
+    public readonly IMyArray srv;
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public IndexModel(ILogger<IndexModel> logger, IMyArray myArray)
     {
         _logger = logger;
+        srv = myArray;
     }
 
     public void OnGet()
