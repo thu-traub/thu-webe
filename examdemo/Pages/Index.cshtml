@@ -1,0 +1,37 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-left">
+    <h1 class="display-4">Welcome</h1>
+    <ul>
+    @foreach (var name in Model.srv.Names)
+    {
+        <li>@name</li>
+    }
+    </ul>
+
+    <ul id="output">
+
+    </ul>
+</div>
+
+@section Scripts {
+    <script>
+        async function run()
+        {
+            const response = await fetch('/api');
+            const data = await response.json();
+            const output = document.getElementById('output');
+            data.forEach(name => {
+                const li = document.createElement('li');
+                li.textContent = name;
+                output.appendChild(li);
+            });
+        }
+
+        run()
+    </script>
+}
